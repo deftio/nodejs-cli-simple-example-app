@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+//A basic cli command structure for nodejs 
+//
+
 const yargs = require("yargs");
 const fs    = require("fs");
 
@@ -23,7 +26,13 @@ function cli (options) {
         try {
             if (options.verbose)
                 console.log('The contents of inputFile are:\n');
-            data = fs.readFileSync(options.inpFile, {encoding:'utf8', flag:'r'});
+            
+            //read the data
+            if (options.inpFile == "-")
+                data = fs.readFileSync(0, "utf-8");
+            else
+                data = fs.readFileSync(options.inpFile, {encoding:'utf8', flag:'r'});
+
             if (options.verbose)
                 console.log(data,'\n');
         }
@@ -32,15 +41,20 @@ function cli (options) {
         }
     }
 
-    // do something with data from input File
+    // do something with data from input 
     if (data) {
 
     }
 
     // write to output file
     if (options.outFile && data != null) {
+
         try {
-            fs.writeFileSync(options.outFile, data);
+            if (options.outFile == '-')
+                process.stdout.write(data); // write to stdout
+            else
+                fs.writeFileSync(options.outFile,data);
+
             if (options.verbose)
                 console.log(`wrote file: ${options.outFile} \n`);
         }
@@ -61,7 +75,7 @@ if (require.main === module) {
      .option("o", { alias: "outFile",     describe: "output File", type: "string", demandOption: false , default : null})
      .option("l", { alias: "listArgs" ,   describe: "list all arguments", type: "boolean", demandOption: false , default: null})
      .option("v", { alias: "verbose" ,   describe: "verbose mode", type: "boolean", demandOption: false , default: false})
-     .demandCommand(1, '')  // this prints out help if no arguments are passed.  Remove this line if your app has default behavior not requiring arguments
+     //.demandCommand(1, '')  // this prints out help if no arguments are passed.  Remove this line if your app has default behavior not requiring arguments
      .argv;
 
     cli(opts);
